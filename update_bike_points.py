@@ -1,17 +1,21 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import json
 import os
 import sys
 import time
 
+import redis
 import requests
 
 APP_ID = os.environ.get("APP_ID")
 APP_KEY = os.environ.get("APP_KEY")
 REQUEST_INTERVAL_SECONDS = 60
 
-def get_bike_point_counts():
+r = redis.StrictRedis()
+
+def get_bike_points_map():
     response = requests.get(
         "https://api.tfl.gov.uk/BikePoint?app_id={}&app_key={}".format(
     	    APP_ID, APP_KEY))
@@ -27,7 +31,7 @@ def get_bike_point_counts():
         return None
 
     bike_points = response.json()
-    bike_point_counts = {}
+    bike_points_map = {}
 
     for bike_point in bike_points:
         additional_properties = bike_point["additionalProperties"]
@@ -38,20 +42,27 @@ def get_bike_point_counts():
             if key == "NbBikes":
                 bikes_count = int(additional_property["value"])
 
-        bike_point_counts[point_name] = bikes_count
+        bike_points_map[point_name] = {
+            "lat": bike_point["lat"],
+            "lon": bike_point["lon"],
+            "count": bikes_count,
+        }
 
-    return bike_point_counts
+    return bike_points_map
 
-prev_bike_point_counts = {}
+prev_bike_points_map = {}
 while True:
-    bike_point_counts = get_bike_point_counts()
+    bike_points_map = get_bike_points_map()
 
-    if bike_point_counts is not None:
+    if bike_points_map is not None:
+        r.set("bike_points_map", json.dumps(bike_points_map))
+
         saw_new_data = False
 
-        for bike_point_name, count in bike_point_counts.items():
-            if bike_point_name in prev_bike_point_counts:
-                prev_count = prev_bike_point_counts[bike_point_name]
+        for bike_point_name, info in bike_points_map.items():
+            count = info["count"]
+            if bike_point_name in prev_bike_points_map:
+                prev_count = prev_bike_points_map[bike_point_name]["count"]
                 delta = count - prev_count
                 if delta != 0:
                     print("delta of %s seen at %s" % (delta, bike_point_name))
@@ -63,6 +74,6 @@ while True:
         if not saw_new_data:
             print("No change seen")
 
-        prev_bike_point_counts = bike_point_counts
+        prev_bike_points_map = bike_points_map
 
     time.sleep(REQUEST_INTERVAL_SECONDS)
