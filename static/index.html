@@ -120,7 +120,6 @@
           keys.forEach(function(key) {
             if (key in markers_by_name) {
               var point_ping_delay = point_interval*point_index;
-              console.log(point_interval);
 
               setTimeout(function() {
                 showMarkerPing(markers_by_name[key]);
