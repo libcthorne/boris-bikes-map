@@ -54,11 +54,17 @@
         },
       ];
 
+      var prevInfoWindow = null;
+
       function addBikePointMarkers(data) {
         var markers = [];
 
         Object.keys(data).forEach(function(key) {
           var info = data[key];
+
+          var infoWindow = new google.maps.InfoWindow({
+            content: key
+          });
 
           var marker = new MarkerWithLabel({
             position: {lat: info.lat, lng: info.lon},
@@ -66,6 +72,21 @@
             labelAnchor: new google.maps.Point(10, 25),
             labelClass: "bike-count-label",*/
             icon: "cycling.png",
+          });
+
+          marker.addListener("click", function() {
+            if (prevInfoWindow != null) {
+              prevInfoWindow.close();
+            }
+
+            if (prevInfoWindow == infoWindow) {
+              prevInfoWindow = null;
+              return;
+            }
+
+            prevInfoWindow = infoWindow;
+
+            infoWindow.open(map, marker);
           });
 
           markers.push(marker);
