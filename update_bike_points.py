@@ -53,10 +53,9 @@ def get_bike_points_map():
 prev_bike_points_map = {}
 while True:
     bike_points_map = get_bike_points_map()
+    bike_points_diff = {}
 
     if bike_points_map is not None:
-        r.set("bike_points_map", json.dumps(bike_points_map))
-
         saw_new_data = False
 
         for bike_point_name, info in bike_points_map.items():
@@ -67,11 +66,15 @@ while True:
                 if delta != 0:
                     print("delta of %s seen at %s" % (delta, bike_point_name))
                     saw_new_data = True
+                    bike_points_diff[bike_point_name] = delta
             else:
                 print("%s bikes at %s" % (count, bike_point_name))
                 saw_new_data = True
 
-        if not saw_new_data:
+        if saw_new_data:
+            r.set("bike_points_map", json.dumps(bike_points_map))
+            r.set("bike_points_diff", json.dumps(bike_points_diff))
+        else:
             print("No change seen")
 
         prev_bike_points_map = bike_points_map
