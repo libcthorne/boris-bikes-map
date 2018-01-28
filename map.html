@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+       #map {
+         height: 300px;
+         width: 100%;
+       }
+
+       .bike-count-label {
+         color: black;
+         font-size: 12px;
+         padding: 3px;
+         background: #ffffffaa;
+         border-color: black;
+         border-style: solid;
+         border-width: 1px;
+         border-radius: 50%;
+       }
+    </style>
+  </head>
+  <body onload="initMap()">
+    <div id="map"></div>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
+    <script type="text/javascript" src="markerwithlabel.js"></script>
+    <script type="text/javascript">
+      function initMap() {
+        var london_pos = {lat: 51.515, lng: -0.141};
+
+        google_map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 11,
+          center: london_pos
+        });
+
+        var marker_pos = {lat: 51.515, lng: -0.141};
+
+        test_marker = new MarkerWithLabel({
+          position: marker_pos,
+          labelContent: "10",
+          labelAnchor: new google.maps.Point(10, 25),
+          labelClass: "bike-count-label",
+          icon: " ",
+          map: google_map
+        });
+      }
+    </script>
+  </body>
+</html>
