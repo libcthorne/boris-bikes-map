@@ -1,0 +1,17 @@
+#map {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  bottom: 0px;
+  right: 0px;
+}
+
+.bike-count-label {
+  color: black;
+  font-size: 18px;
+  padding: 3px;
+  background: #ffffffaa;
+  border-color: black;
+  border-style: solid;
+  border-width: 2px;
+}
