@@ -4,7 +4,14 @@
     <link rel="stylesheet" href="index.css">
   </head>
   <body onload="initMap()">
-    <div id="map"></div>
+		<div id="container">
+			<div id="map"></div>
+			<div id="key">
+				<img width="16px" src="black-circle.png"/> Dock point
+				<img width="16px" src="green-circle.png"/> Bike returned
+				<img width="16px" src="red-circle.png"/> Bike taken
+			</div>
+		</div>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
     <script type="text/javascript" src="markerwithlabel.js"></script>
     <script type="text/javascript" src="markerclusterer.js"></script>
