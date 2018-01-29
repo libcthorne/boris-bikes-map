@@ -1,5 +1,6 @@
 var DIFF_INTERVAL = 60000;
-var markers_by_name = {};
+var bike_point_by_name = {};
+var google_map = null;
 
 function initMap() {
   var london_pos = {lat: 51.515, lng: -0.141};
@@ -18,32 +19,40 @@ function populateMap() {
     return response.json();
   })
   .then(function(data) {
-    addBikePointMarkers(data);
+    addBikePoints(data);
   });
 }
 
-function addBikePointMarkers(data) {
+function addBikePoints(data) {
   var prevInfoWindow = null;
-  var markers = [];
 
   Object.keys(data).forEach(function(key) {
     var info = data[key];
 
     var infoWindow = new google.maps.InfoWindow({
-      content: key
+      content: key,
+      position: new google.maps.LatLng(info.lat, info.lon)
     });
 
-    var marker = new MarkerWithLabel({
-      position: {lat: info.lat, lng: info.lon},
-      /*labelContent: info.count,
-      labelAnchor: new google.maps.Point(10, 25),
-      labelClass: "bike-count-label",*/
-      icon: "cycling.png"
+    var position = {lat: info.lat, lng: info.lon};
+
+    var circle = new google.maps.Circle({
+      strokeOpacity: 0,
+      fillColor: "#000000",
+      fillOpacity: 0.5,
+      map: google_map,
+      center: position,
+      radius: Math.max(info.count*5, 30),
+      zIndex: 50
     });
 
-    markers_by_name[key] = marker;
+    bike_point_by_name[key] = {
+      circle: circle,
+      info: info,
+      position: position
+    }
 
-    marker.addListener("click", function() {
+    circle.addListener("click", function() {
       if (prevInfoWindow != null) {
 	prevInfoWindow.close();
       }
@@ -55,23 +64,9 @@ function addBikePointMarkers(data) {
 
       prevInfoWindow = infoWindow;
 
-      infoWindow.open(map, marker);
+      infoWindow.open(google_map);
     });
-
-    markers.push(marker);
   });
-
-  var markerCluster = new MarkerClusterer(google_map, markers,
-    {
-      styles: [{
-	height: 32,
-	url: "cycling.png",
-	width: 32,
-	textColor: "#00000000"
-      }],
-      gridSize: 50
-    }
-  );
 
   renderDiff();
   setInterval(renderDiff, DIFF_INTERVAL);
@@ -89,31 +84,41 @@ function renderDiff() {
     var point_index = 0;
 
     keys.forEach(function(key) {
-      if (key in markers_by_name) {
-	var point_ping_delay = point_interval*point_index;
+      if (key in bike_point_by_name) {
+	var point_update_delay = point_interval*point_index;
+	var bike_point = bike_point_by_name[key];
+	var delta = data[key];
 
 	setTimeout(function() {
-	  showMarkerPing(markers_by_name[key]);
-	}, point_ping_delay);
+	  showActivityPing(delta, bike_point.position);
+	}, point_update_delay);
 
 	point_index++;
       }
     });
   });
-		  }
+}
 
-function showMarkerPing(marker) {
+function showActivityPing(delta, position) {
+  var color;
+  if (delta > 0) {
+    color = "#00FF00";
+  } else {
+    color = "#FF0000";
+  }
+
   var circle = new google.maps.Circle({
     strokeOpacity: 0,
-    fillColor: "#FF0000",
-    fillOpacity: 0.5,
+    fillColor: color,
+    fillOpacity: 1.0,
     map: google_map,
-    center: marker.getPosition(),
-    radius: 100
+    center: position,
+    radius: 150,
+    zIndex: 100
   });
 
   var t = setInterval(function() {
-    circle.set("fillOpacity", circle.get("fillOpacity")-0.01);
+    circle.set("fillOpacity", circle.get("fillOpacity")-0.02);
   }, 100);
 
   setTimeout(function() {

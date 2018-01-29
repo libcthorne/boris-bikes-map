@@ -1,9 +1,9 @@
 #map {
   position: absolute;
-  top: 0px;
-  left: 0px;
-  bottom: 0px;
-  right: 0px;
+  top: 100px;
+  left: 200px;
+  bottom: 100px;
+  right: 200px;
 }
 
 .bike-count-label {
