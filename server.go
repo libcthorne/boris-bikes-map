@@ -27,6 +27,6 @@ func create_redis_handler(key string) func (http.ResponseWriter, *http.Request) 
 func main() {
     http.Handle("/", http.FileServer(http.Dir("./static")))
     http.HandleFunc("/bike_points", create_redis_handler("bike_points_map"))
-    http.HandleFunc("/bike_points_diff", create_redis_handler("bike_points_diff"))
+    http.HandleFunc("/prev_bike_points", create_redis_handler("prev_bike_points_map"))
     http.ListenAndServe(":8080", nil)
 }

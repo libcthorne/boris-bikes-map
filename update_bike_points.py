@@ -50,7 +50,7 @@ def get_bike_points_map():
 
     return bike_points_map
 
-prev_bike_points_map = {}
+prev_bike_points_map = json.loads(r.get("bike_points_map")) or {}
 while True:
     bike_points_map = get_bike_points_map()
     bike_points_diff = {}
@@ -73,7 +73,7 @@ while True:
 
         if saw_new_data:
             r.set("bike_points_map", json.dumps(bike_points_map))
-            r.set("bike_points_diff", json.dumps(bike_points_diff))
+            r.set("prev_bike_points_map", json.dumps(prev_bike_points_map))
         else:
             print("No change seen")
 
