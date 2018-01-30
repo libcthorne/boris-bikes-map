@@ -50,7 +50,7 @@ def get_bike_points_map():
 
     return bike_points_map
 
-prev_bike_points_map = json.loads(r.get("bike_points_map")) or {}
+prev_bike_points_map = json.loads(r.get("bike_points_map") or "{}")
 while True:
     bike_points_map = get_bike_points_map()
     bike_points_diff = {}
