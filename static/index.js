@@ -1,13 +1,17 @@
+var LONDON_CENTER = {lat: 51.515, lng: -0.141};
+var DEFAULT_ZOOM = 12;
 var DIFF_INTERVAL = 60000;
+var DOCK_POINT_COLOR = "#000000";
+var BIKE_INCREASE_COLOR = "#00FF00";
+var BIKE_DECREASE_COLOR = "#FF0000";
+
 var bike_point_by_name = {};
 var google_map = null;
 
 function initMap() {
-  var london_pos = {lat: 51.515, lng: -0.141};
-
   google_map = new google.maps.Map(document.getElementById('map'), {
-    zoom: 12,
-    center: london_pos
+    zoom: DEFAULT_ZOOM,
+    center: LONDON_CENTER
   });
 
   populateMap();
@@ -38,7 +42,7 @@ function addBikePoints(data) {
 
     var circle = new google.maps.Circle({
       strokeOpacity: 0,
-      fillColor: "#000000",
+      fillColor: DOCK_POINT_COLOR,
       fillOpacity: 0.5,
       map: google_map,
       center: position,
@@ -90,7 +94,7 @@ function renderDiff() {
 	var delta = data[key];
 
 	setTimeout(function() {
-	  showActivityPing(delta, bike_point.position);
+	  showActivityCircle(delta, bike_point.position);
 	}, point_update_delay);
 
 	point_index++;
@@ -99,12 +103,12 @@ function renderDiff() {
   });
 }
 
-function showActivityPing(delta, position) {
+function showActivityCircle(delta, position) {
   var color;
   if (delta > 0) {
-    color = "#00FF00";
+    color = BIKE_INCREASE_COLOR;
   } else {
-    color = "#FF0000";
+    color = BIKE_DECREASE_COLOR;
   }
 
   var circle = new google.maps.Circle({
