@@ -36,7 +36,7 @@ def get_bike_points_map():
     for bike_point in bike_points:
         additional_properties = bike_point["additionalProperties"]
         point_name = bike_point["commonName"]
-        bikes_count = None
+        bikes_count = 0
         for additional_property in additional_properties:
             key = additional_property["key"]
             if key == "NbBikes":
