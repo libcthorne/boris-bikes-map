@@ -40,7 +40,7 @@ function addBikePoints(bike_points) {
 
 function addBikePoint(bike_point_name, info) {
   var info_window = new google.maps.InfoWindow({
-    content: bike_point_name,
+    content: getBikeInfoWindowContent(bike_point_name, info.count),
     position: new google.maps.LatLng(info.lat, info.lon)
   });
 
@@ -57,9 +57,11 @@ function addBikePoint(bike_point_name, info) {
   });
 
   bike_point_by_name[bike_point_name] = {
-    circle: circle,
+    name: bike_point_name,
     info: info,
-    position: position
+    circle: circle,
+    position: position,
+    info_window: info_window
   }
 
   circle.addListener("click", function() {
@@ -133,6 +135,10 @@ function applyBikePointDelta(bike_point, delta) {
 
   bike_point.info.count += delta;
 
+  bike_point.info_window.setContent(
+    getBikeInfoWindowContent(bike_point.name, bike_point.info.count)
+  )
+
   bike_point.circle.setRadius(
     getRadiusForBikeCount(bike_point.info.count)
   );
@@ -169,4 +175,8 @@ function showActivityCircle(position, delta) {
 
 function getRadiusForBikeCount(bike_count) {
   return Math.max(bike_count*5, 30);
+}
+
+function getBikeInfoWindowContent(bike_point_name, count) {
+  return bike_point_name + " (" + count + " bikes available)"
 }
