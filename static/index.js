@@ -1,6 +1,6 @@
 var LONDON_CENTER = {lat: 51.515, lng: -0.141};
 var DEFAULT_ZOOM = 12;
-var DIFF_INTERVAL = 60000;
+var UPDATE_INTERVAL = 60000;
 var DOCK_POINT_COLOR = "#000000";
 var BIKE_INCREASE_COLOR = "#00FF00";
 var BIKE_DECREASE_COLOR = "#FF0000";
@@ -46,11 +46,12 @@ function addBikePoints(data) {
       fillOpacity: 0.5,
       map: google_map,
       center: position,
-      radius: Math.max(info.count*5, 30),
+      radius: getRadiusForBikeCount(info.count),
       zIndex: 50
     });
 
     bike_point_by_name[key] = {
+      count: info.count,
       circle: circle,
       info: info,
       position: position
@@ -72,11 +73,11 @@ function addBikePoints(data) {
     });
   });
 
-  renderDiff();
-  setInterval(renderDiff, DIFF_INTERVAL);
+  updateBikePoints();
+  setInterval(updateBikePoints, UPDATE_INTERVAL);
 }
 
-function renderDiff() {
+function updateBikePoints() {
   fetch("/bike_points_diff")
   .then(function(response) {
     return response.json();
@@ -84,7 +85,7 @@ function renderDiff() {
   .then(function(data) {
     var keys = Object.keys(data);
 
-    var point_interval = DIFF_INTERVAL/keys.length;
+    var point_interval = UPDATE_INTERVAL/keys.length;
     var point_index = 0;
 
     keys.forEach(function(key) {
@@ -94,7 +95,7 @@ function renderDiff() {
 	var delta = data[key];
 
 	setTimeout(function() {
-	  showActivityCircle(delta, bike_point.position);
+	  applyBikePointDelta(bike_point, delta);
 	}, point_update_delay);
 
 	point_index++;
@@ -103,7 +104,17 @@ function renderDiff() {
   });
 }
 
-function showActivityCircle(delta, position) {
+function applyBikePointDelta(bike_point, delta) {
+  showActivityCircle(bike_point.position, delta);
+
+  bike_point.count = Math.max(bike_point.count+delta, 0);
+
+  bike_point.circle.setRadius(
+    getRadiusForBikeCount(bike_point.count)
+  );
+}
+
+function showActivityCircle(position, delta) {
   var color;
   if (delta > 0) {
     color = BIKE_INCREASE_COLOR;
@@ -130,4 +141,8 @@ function showActivityCircle(delta, position) {
     delete circle;
     clearInterval(t);
   }, 5000);
+}
+
+function getRadiusForBikeCount(bike_count) {
+  return Math.max(bike_count*5, 30);
 }
