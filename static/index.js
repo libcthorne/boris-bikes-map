@@ -12,7 +12,8 @@ var prev_info_window = null;
 function initMap() {
   google_map = new google.maps.Map(document.getElementById('map'), {
     zoom: DEFAULT_ZOOM,
-    center: LONDON_CENTER
+    center: LONDON_CENTER,
+    clickableIcons: false
   });
 
   populateMap();
