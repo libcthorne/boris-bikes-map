@@ -159,7 +159,8 @@ function showActivityCircle(position, delta) {
     map: google_map,
     center: position,
     radius: 150,
-    zIndex: 100
+    zIndex: 100,
+    clickable: false
   });
 
   var t = setInterval(function() {
