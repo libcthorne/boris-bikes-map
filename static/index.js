@@ -24,12 +24,12 @@ function populateMap() {
 }
 
 function addBikePoints(data) {
-  var prevInfoWindow = null;
+  var prev_info_window = null;
 
   Object.keys(data).forEach(function(key) {
     var info = data[key];
 
-    var infoWindow = new google.maps.InfoWindow({
+    var info_window = new google.maps.InfoWindow({
       content: key,
       position: new google.maps.LatLng(info.lat, info.lon)
     });
@@ -53,18 +53,18 @@ function addBikePoints(data) {
     }
 
     circle.addListener("click", function() {
-      if (prevInfoWindow != null) {
-	prevInfoWindow.close();
+      if (prev_info_window != null) {
+	prev_info_window.close();
       }
 
-      if (prevInfoWindow == infoWindow) {
-	prevInfoWindow = null;
+      if (prev_info_window == info_window) {
+	prev_info_window = null;
 	return;
       }
 
-      prevInfoWindow = infoWindow;
+      prev_info_window = info_window;
 
-      infoWindow.open(google_map);
+      info_window.open(google_map);
     });
   });
 
