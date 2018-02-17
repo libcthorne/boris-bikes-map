@@ -11,7 +11,7 @@ import requests
 
 APP_ID = os.environ.get("APP_ID")
 APP_KEY = os.environ.get("APP_KEY")
-REQUEST_INTERVAL_SECONDS = 60
+REQUEST_INTERVAL_SECONDS = 120
 
 r = redis.StrictRedis()
 
