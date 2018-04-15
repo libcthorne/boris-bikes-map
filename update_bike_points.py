@@ -11,7 +11,7 @@ import requests
 
 APP_ID = os.environ.get("APP_ID")
 APP_KEY = os.environ.get("APP_KEY")
-REQUEST_INTERVAL_SECONDS = 120
+REQUEST_INTERVAL_SECONDS = 5*60 # data only updated every 5 minutes
 
 r = redis.StrictRedis()
 
